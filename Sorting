@@ -1,0 +1,54 @@
+import random
+from IPython.display import display, HTML, clear_output
+import time
+import matplotlib.pyplot as plt
+
+def categorize_products(prices):
+    # Assign product names based on price categories
+    product_names = [f'Product {i + 1}' for i in range(len(prices))]
+    return product_names
+
+def bubble_sort(arr, product_names):
+    n = len(arr)
+    swapped = True
+    while swapped:
+        swapped = False
+        for i in range(1, n):
+            clear_output(wait=True)
+            display(HTML(generate_bar_chart(arr, product_names, i - 1, i)))
+            time.sleep(0.2)
+            if arr[i - 1] > arr[i]:
+                arr[i - 1], arr[i] = arr[i], arr[i - 1]
+                product_names[i - 1], product_names[i] = product_names[i], product_names[i - 1]
+                swapped = True
+
+def generate_bar_chart(arr, product_names, index1, index2):
+    prices = arr
+    colors = ['blue' if i == index1 or i == index2 else 'gray' for i in range(len(arr))]
+
+    plt.figure(figsize=(10, 2))  # Smaller bars
+    plt.barh(range(len(arr)), prices, color=colors)
+    plt.xlabel('Price')
+    plt.title('Product Prices')
+    plt.yticks(range(len(arr)), product_names)
+    for i, price in enumerate(prices):
+        plt.text(price, i, f"${price:.2f}", va='center')  # Price labels on the bars
+    plt.gca().invert_yaxis()
+    plt.show()
+
+# Input from the user
+user_input = input("Enter a list of product prices separated by spaces: ")
+prices = [float(price) for price in user_input.split()]
+
+# Categorize the product names as "Product 1," "Product 2," etc.
+product_names = categorize_products(prices)
+
+# Sort and visualize the products based on price
+bubble_sort(prices, product_names)
+
+# Display the products sorted from low to high price
+sorted_data = sorted(zip(product_names, prices), key=lambda x: x[1])
+sorted_product_names, sorted_prices = zip(*sorted_data)
+print("Products sorted from low to high price:")
+for product, price in zip(sorted_product_names, sorted_prices):
+    print(f"{product}: ${price:.2f}")
